@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 @Slf4j
 @RestController
@@ -22,7 +21,7 @@ public class RecommendationServiceImpl implements RecommendationService {
     private final RecommendationMapper mapper;
 
     @Override
-    public Mono<Recommendation> createRecommendation(Recommendation body) {
+    public Recommendation createRecommendation(Recommendation body) {
         if (body.getProductId() < 1) throw new InvalidInputException("Invalid productId: " + body.getProductId());
 
         RecommendationEntity entity = mapper.apiToEntity(body);
@@ -32,7 +31,8 @@ public class RecommendationServiceImpl implements RecommendationService {
                 .onErrorMap(
                         DuplicateKeyException.class,
                         ex -> new InvalidInputException("Duplicate key, Product Id: " + body.getProductId() + ", Recommendation Id:" + body.getRecommendationId()))
-                .map(mapper::entityToApi);
+                .map(mapper::entityToApi)
+                .block();
     }
 
     @Override
@@ -49,10 +49,10 @@ public class RecommendationServiceImpl implements RecommendationService {
     }
 
     @Override
-    public Mono<Void> deleteRecommendation(int productId) {
+    public void deleteRecommendation(int productId) {
         if (productId < 1) throw new InvalidInputException("Invalid productId: " + productId);
 
         log.debug("deleteRecommendations: tries to delete recommendations for the product with productId: {}", productId);
-        return repository.deleteAll(repository.findByProductId(productId));
+        repository.deleteAll(repository.findByProductId(productId)).block();
     }
 }

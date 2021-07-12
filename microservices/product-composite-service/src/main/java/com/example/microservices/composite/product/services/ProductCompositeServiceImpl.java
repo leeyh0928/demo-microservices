@@ -26,7 +26,7 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
             log.debug("createCompositeProduct: creates a new composite entity for productId: {}", body.getProductId());
 
             var product = new Product(body.getProductId(), body.getName(), body.getWeight(), null);
-            integration.createProduct(product).subscribe();
+            integration.createProduct(product);
 
             if (body.getRecommendations() != null) {
                 body.getRecommendations().forEach(r -> {
@@ -38,7 +38,7 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
                             .content(r.getContent())
                             .build();
 
-                    integration.createRecommendation(recommendation).subscribe();
+                    integration.createRecommendation(recommendation);
                 });
             }
 
@@ -52,7 +52,7 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
                             .content(r.getContent())
                             .build();
 
-                    integration.createReview(review).subscribe();
+                    integration.createReview(review);
                 });
             }
 
@@ -66,11 +66,7 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 
     @Override
     public Mono<ProductAggregate> getCompositeProduct(int productId) {
-        return Mono.zip(values -> createProductAggregate(
-                (Product) values[0],
-                (List<Recommendation>) values[1],
-                (List<Review>) values[2],
-                serviceUtil.getServiceAddress()),
+        return Mono.zip(values -> createProductAggregate((Product) values[0], (List<Recommendation>) values[1], (List<Review>) values[2], serviceUtil.getServiceAddress()),
                 integration.getProduct(productId),
                 integration.getRecommendations(productId).collectList(),
                 integration.getReviews(productId).collectList()
@@ -80,13 +76,18 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 
     @Override
     public void deleteCompositeProduct(int productId) {
-        log.debug("deleteCompositeProduct: Deletes a product aggregate for productId: {}", productId);
+        try {
+            log.debug("deleteCompositeProduct: Deletes a product aggregate for productId: {}", productId);
 
-        integration.deleteProduct(productId).subscribe();
-        integration.deleteRecommendation(productId).subscribe();
-        integration.deleteReview(productId).subscribe();
+            integration.deleteProduct(productId);
+            integration.deleteRecommendation(productId);
+            integration.deleteReview(productId);
 
-        log.debug("getCompositeProduct: aggregate entities deleted for productId: {}", productId);
+            log.debug("getCompositeProduct: aggregate entities deleted for productId: {}", productId);
+        } catch (RuntimeException re) {
+            log.warn("deleteCompositeProduct failed: {}", re.toString());
+            throw re;
+        }
     }
 
     private ProductAggregate createProductAggregate(Product product, List<Recommendation> recommendations, List<Review> reviews, String serviceAddress) {

@@ -8,12 +8,12 @@ public interface ReviewService {
     @PostMapping(value = "/review",
             consumes = "application/json",
             produces = "application/json")
-    Mono<Review> createReview(@RequestBody Review body);
-
-    @DeleteMapping(value = "/review")
-    Mono<Void> deleteReview(@RequestParam int productId);
+    Review createReview(@RequestBody Review body);
 
     @GetMapping(value = "/review",
             produces = "application/json")
     Flux<Review> getReviews(@RequestParam int productId);
+
+    @DeleteMapping(value = "/review")
+    void deleteReview(@RequestParam int productId);
 }

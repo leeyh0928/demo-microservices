@@ -8,10 +8,10 @@ public interface ProductService {
             value = "/product",
             consumes = "application/json",
             produces = "application/json")
-    Mono<Product> createProduct(@RequestBody Product body);
+    Product createProduct(@RequestBody Product body);
 
     @DeleteMapping(value = "/product/{productId}")
-    Mono<Void> deleteProduct(@PathVariable int productId);
+    void deleteProduct(@PathVariable int productId);
 
     @GetMapping(
             value = "/product/{productId}",

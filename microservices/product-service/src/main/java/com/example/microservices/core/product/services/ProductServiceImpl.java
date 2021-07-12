@@ -22,17 +22,19 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper mapper;
 
     @Override
-    public Mono<Product> createProduct(Product body) {
+    public Product createProduct(Product body) {
         if (body.getProductId() < 1)
             throw new InvalidInputException("Invalid productId: " + body.getProductId());
 
         ProductEntity entity = mapper.apiToEntity(body);
-        return repository.save(entity)
+        Mono<Product> newEntity = repository.save(entity)
                 .log()
                 .onErrorMap(
                         DuplicateKeyException.class,
                         ex -> new InvalidInputException("Duplicate key, Product Id: " + body.getProductId()))
                 .map(mapper::entityToApi);
+
+        return newEntity.block();
     }
 
     @Override
@@ -50,13 +52,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Mono<Void> deleteProduct(int productId) {
+    public void deleteProduct(int productId) {
         if (productId < 1) throw new InvalidInputException("Invalid productId: " + productId);
 
         log.debug("deleteProduct: tries to delete an entity with productId: {}", productId);
-        return repository.findByProductId(productId)
+        repository.findByProductId(productId)
                 .log()
                 .map(repository::delete)
-                .flatMap(it -> it);
+                .flatMap(it -> it)
+                .block();
     }
 }

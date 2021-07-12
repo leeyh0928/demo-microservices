@@ -21,7 +21,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static java.util.Collections.singletonList;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.*;
@@ -57,17 +56,6 @@ class ProductCompositeServiceApplicationTest {
 
         given(compositeIntegration.getProduct(PRODUCT_ID_INVALID))
                 .willThrow(new InvalidInputException("INVALID: " + PRODUCT_ID_INVALID));
-
-        given(compositeIntegration.createProduct(any()))
-                .willAnswer(answer -> Mono.just(answer.getArgument(0)));
-        given(compositeIntegration.createRecommendation(any()))
-                .willAnswer(answer -> Mono.just(answer.getArgument(0)));
-        given(compositeIntegration.createReview(any()))
-                .willAnswer(answer -> Mono.just(answer.getArgument(0)));
-
-        given(compositeIntegration.deleteProduct(PRODUCT_ID_OK)).willReturn(Mono.empty());
-        given(compositeIntegration.deleteRecommendation(PRODUCT_ID_OK)).willReturn(Mono.empty());
-        given(compositeIntegration.deleteReview(PRODUCT_ID_OK)).willReturn(Mono.empty());
     }
 
     @Test

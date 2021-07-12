@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
 import java.util.List;
@@ -27,23 +26,22 @@ public class ReviewServiceImpl implements ReviewService {
     private final Scheduler scheduler;
 
     @Override
-    public Mono<Review> createReview(Review body) {
+    public Review createReview(Review body) {
         try {
             ReviewEntity entity = mapper.apiToEntity(body);
             ReviewEntity newEntity = repository.save(entity);
 
             log.debug("createReview: created a review entity: {}/{}", body.getProductId(), body.getReviewId());
-            return Mono.just(mapper.entityToApi(newEntity));
+            return mapper.entityToApi(newEntity);
         } catch (DataIntegrityViolationException dive) {
             throw new InvalidInputException("Duplicate key, Product Id: " + body.getProductId() + ", Review Id:" + body.getReviewId());
         }
     }
 
     @Override
-    public Mono<Void> deleteReview(int productId) {
+    public void deleteReview(int productId) {
         log.debug("deleteReviews: tries to delete reviews for the product with productId: {}", productId);
         repository.deleteAll(repository.findByProductId(productId));
-        return Mono.empty();
     }
 
     @Override
