@@ -1,20 +1,20 @@
 package com.example.microservices.api.core.recommendation;
 
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface RecommendationService {
     @PostMapping(value = "/recommendation",
             consumes = "application/json",
             produces = "application/json")
-    Recommendation createRecommendation(@RequestBody Recommendation body);
-
-    @DeleteMapping("/recommendation")
-    void deleteRecommendation(@RequestParam int productId);
+    Mono<Recommendation> createRecommendation(@RequestBody Recommendation body);
 
     @GetMapping(
             value = "/recommendation",
             produces = "application/json")
-    List<Recommendation> getRecommendations(@RequestParam int productId);
+    Flux<Recommendation> getRecommendations(@RequestParam int productId);
+
+    @DeleteMapping("/recommendation")
+    Mono<Void> deleteRecommendation(@RequestParam int productId);
 }

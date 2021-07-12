@@ -17,10 +17,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
-
-import java.util.Collections;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import static java.util.Collections.singletonList;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.*;
@@ -43,19 +44,30 @@ class ProductCompositeServiceApplicationTest {
     @BeforeEach
     void setUp() {
         given(compositeIntegration.getProduct(PRODUCT_ID_OK))
-                .willReturn(new Product(PRODUCT_ID_OK, "name", 1, "mock-address"));
+                .willReturn(Mono.just(new Product(PRODUCT_ID_OK, "name", 1, "mock-address")));
         given(compositeIntegration.getRecommendations(PRODUCT_ID_OK))
-                .willReturn(Collections.singletonList(new Recommendation(
-                        PRODUCT_ID_OK, 1, "author", 1, "content", "mock address")));
+                .willReturn(Flux.fromIterable(singletonList(new Recommendation(
+                        PRODUCT_ID_OK, 1, "author", 1, "content", "mock address"))));
         given(compositeIntegration.getReviews(PRODUCT_ID_OK))
-                .willReturn(Collections.singletonList(new Review(
-                        PRODUCT_ID_OK, 1, "author", "subject", "content", "mock address")));
+                .willReturn(Flux.fromIterable(singletonList(new Review(
+                        PRODUCT_ID_OK, 1, "author", "subject", "content", "mock address"))));
 
         given(compositeIntegration.getProduct(PRODUCT_ID_NOT_FOUND))
                 .willThrow(new NotFoundException("NOT FOUND: " + PRODUCT_ID_NOT_FOUND));
 
         given(compositeIntegration.getProduct(PRODUCT_ID_INVALID))
                 .willThrow(new InvalidInputException("INVALID: " + PRODUCT_ID_INVALID));
+
+        given(compositeIntegration.createProduct(any()))
+                .willAnswer(answer -> Mono.just(answer.getArgument(0)));
+        given(compositeIntegration.createRecommendation(any()))
+                .willAnswer(answer -> Mono.just(answer.getArgument(0)));
+        given(compositeIntegration.createReview(any()))
+                .willAnswer(answer -> Mono.just(answer.getArgument(0)));
+
+        given(compositeIntegration.deleteProduct(PRODUCT_ID_OK)).willReturn(Mono.empty());
+        given(compositeIntegration.deleteRecommendation(PRODUCT_ID_OK)).willReturn(Mono.empty());
+        given(compositeIntegration.deleteReview(PRODUCT_ID_OK)).willReturn(Mono.empty());
     }
 
     @Test

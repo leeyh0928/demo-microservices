@@ -9,9 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.test.StepVerifier;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -30,7 +31,7 @@ class ProductServiceImplTest {
 
     @BeforeEach
     void setupDb() {
-        repository.deleteAll();
+        repository.deleteAll().block();
     }
 
     @Test
@@ -40,7 +41,9 @@ class ProductServiceImplTest {
 
         postAndVerifyProduct(productId, OK);
 
-        assertTrue(repository.findByProductId(productId).isPresent());
+        StepVerifier.create(repository.findByProductId(productId))
+                .expectNextMatches(foundEntity -> foundEntity.getProductId() == productId)
+                .verifyComplete();
 
         getAndVerifyProduct(productId, OK)
                 .jsonPath("$.productId").isEqualTo(productId);
@@ -53,7 +56,9 @@ class ProductServiceImplTest {
 
         postAndVerifyProduct(productId, OK);
 
-        assertTrue(repository.findByProductId(productId).isPresent());
+        StepVerifier.create(repository.findByProductId(productId))
+                .expectNextMatches(foundEntity -> foundEntity.getProductId() == productId)
+                .verifyComplete();
 
         postAndVerifyProduct(productId, UNPROCESSABLE_ENTITY)
                 .jsonPath("$.path").isEqualTo("/product")
@@ -66,10 +71,10 @@ class ProductServiceImplTest {
         int productId = 1;
 
         postAndVerifyProduct(productId, OK);
-        assertTrue(repository.findByProductId(productId).isPresent());
+        assertNotNull(repository.findByProductId(productId).block());
 
         deleteAndVerifyProduct(productId, OK);
-        assertFalse(repository.findByProductId(productId).isPresent());
+        assertNull(repository.findByProductId(productId).block());
 
         deleteAndVerifyProduct(productId, OK);
     }

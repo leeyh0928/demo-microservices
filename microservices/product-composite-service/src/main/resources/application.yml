@@ -58,7 +58,7 @@ api:
         The implementation of the delete method is idempotent, i.e. it can be called several times with the same response.
         This means that a delete request of a non existing product will return <b>200 Ok</b>.
 
-server.port: 7000
+server.port: 8080
 server.error.include-message: always
 
 app:
@@ -72,10 +72,34 @@ app:
     host: localhost
     port: 7003
 
+#spring.cloud.stream:
+#  defaultBinder: rabbit
+#  default.contentType: application/json
+#  bindings:
+#    output-products:
+#      destination: products
+#    output-recommendations:
+#      destination: recommendations
+#    output-reviews:
+#      destination: reviews
+#
+#spring.cloud.stream.kafka.binder:
+#  brokers: 127.0.0.1
+#  defaultBrokerPort: 9092
+#
+#spring.rabbitmq:
+#  host: 127.0.0.1
+#  port: 5672
+#  username: guest
+#  password: guest
+
 logging:
   level:
     root: info
     com.example.microservices: debug
+
+management.endpoint.health.show-details: "ALWAYS"
+management.endpoints.web.exposure.include: "*"
 
 ---
 spring:
@@ -95,3 +119,6 @@ app:
   review-service:
     host: review
     port: 8080
+
+spring.rabbitmq.host: rabbitmq
+spring.cloud.stream.kafka.binder.brokers: kafka

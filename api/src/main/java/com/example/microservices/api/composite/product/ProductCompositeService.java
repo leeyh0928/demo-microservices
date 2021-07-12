@@ -2,6 +2,7 @@ package com.example.microservices.api.composite.product;
 
 import io.swagger.annotations.*;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 @Api(description = "REST API for composite product information.")
 public interface ProductCompositeService {
@@ -28,7 +29,7 @@ public interface ProductCompositeService {
     @GetMapping(
             value = "/product-composite/{productId}",
             produces = "application/json")
-    ProductAggregate getProduct(@PathVariable int productId);
+    Mono<ProductAggregate> getCompositeProduct(@PathVariable int productId);
 
     @ApiOperation(
             value = "${api.product-composite.delete-composite-product.description}",

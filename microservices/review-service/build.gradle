@@ -31,6 +31,10 @@ compileJava {
     ]
 }
 
+ext {
+    springCloudVersion = "2020.0.3"
+}
+
 dependencies {
     implementation project(':api')
     implementation project(':util')
@@ -38,6 +42,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+//    implementation('org.springframework.cloud:spring-cloud-starter-stream-rabbit')
+//    implementation('org.springframework.cloud:spring-cloud-starter-stream-kafka')
+
     implementation("mysql:mysql-connector-java")
     implementation("org.mapstruct:mapstruct:${mapstructVersion}")
     implementation("org.projectlombok:lombok-mapstruct-binding:0.2.0")
@@ -54,6 +61,7 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+//    testImplementation('org.springframework.cloud:spring-cloud-stream-test-support')
     testImplementation 'io.projectreactor:reactor-test'
     testImplementation("com.h2database:h2")
 }

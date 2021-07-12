@@ -4,11 +4,11 @@ import com.example.microservices.api.composite.product.*;
 import com.example.microservices.api.core.product.Product;
 import com.example.microservices.api.core.recommendation.Recommendation;
 import com.example.microservices.api.core.review.Review;
-import com.example.microservices.util.exceptions.NotFoundException;
 import com.example.microservices.util.http.ServiceUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +26,7 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
             log.debug("createCompositeProduct: creates a new composite entity for productId: {}", body.getProductId());
 
             var product = new Product(body.getProductId(), body.getName(), body.getWeight(), null);
-            integration.createProduct(product);
+            integration.createProduct(product).subscribe();
 
             if (body.getRecommendations() != null) {
                 body.getRecommendations().forEach(r -> {
@@ -38,7 +38,7 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
                             .content(r.getContent())
                             .build();
 
-                    integration.createRecommendation(recommendation);
+                    integration.createRecommendation(recommendation).subscribe();
                 });
             }
 
@@ -52,7 +52,7 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
                             .content(r.getContent())
                             .build();
 
-                    integration.createReview(review);
+                    integration.createReview(review).subscribe();
                 });
             }
 
@@ -65,23 +65,26 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
     }
 
     @Override
-    public ProductAggregate getProduct(int productId) {
-        var product = integration.getProduct(productId);
-        if (product == null) throw new NotFoundException("No product found for productId: " + productId);
-
-        List<Recommendation> recommendations = integration.getRecommendations(productId);
-        List<Review> reviews = integration.getReviews(productId);
-
-        return createProductAggregate(product, recommendations, reviews, serviceUtil.getServiceAddress());
+    public Mono<ProductAggregate> getCompositeProduct(int productId) {
+        return Mono.zip(values -> createProductAggregate(
+                (Product) values[0],
+                (List<Recommendation>) values[1],
+                (List<Review>) values[2],
+                serviceUtil.getServiceAddress()),
+                integration.getProduct(productId),
+                integration.getRecommendations(productId).collectList(),
+                integration.getReviews(productId).collectList()
+                        .doOnError(ex -> log.warn("getCompositeProduct failed: {}", ex.toString()))
+                        .log());
     }
 
     @Override
     public void deleteCompositeProduct(int productId) {
         log.debug("deleteCompositeProduct: Deletes a product aggregate for productId: {}", productId);
 
-        integration.deleteProduct(productId);
-        integration.deleteRecommendation(productId);
-        integration.deleteReview(productId);
+        integration.deleteProduct(productId).subscribe();
+        integration.deleteRecommendation(productId).subscribe();
+        integration.deleteReview(productId).subscribe();
 
         log.debug("getCompositeProduct: aggregate entities deleted for productId: {}", productId);
     }
