@@ -9,14 +9,12 @@ import com.example.microservices.api.core.review.Review;
 import com.example.microservices.api.event.Event;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.stream.test.binder.MessageCollector;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.concurrent.BlockingQueue;
@@ -33,8 +31,8 @@ import static org.springframework.cloud.stream.test.matcher.MessageQueueMatcher.
 import static org.springframework.http.HttpStatus.OK;
 import static reactor.core.publisher.Mono.just;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT)
+@SpringBootTest(webEnvironment = RANDOM_PORT,
+        properties = {"eureka.client.enabled=false"})
 class MessagingTests {
     @Autowired
     private MessageCollector collector;

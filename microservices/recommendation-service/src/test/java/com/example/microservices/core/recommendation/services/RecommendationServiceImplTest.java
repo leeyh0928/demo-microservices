@@ -28,7 +28,7 @@ import static reactor.core.publisher.Mono.just;
 
 @SpringBootTest(
         webEnvironment=RANDOM_PORT,
-        properties = {"spring.data.mongodb.port: 0"})
+        properties = {"spring.data.mongodb.port: 0", "eureka.client.enabled=false"})
 @Import(RecommendationMapperImpl.class)
 class RecommendationServiceImplTest {
     @Autowired

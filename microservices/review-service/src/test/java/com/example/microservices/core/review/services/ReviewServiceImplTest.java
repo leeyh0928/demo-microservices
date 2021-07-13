@@ -27,7 +27,7 @@ import static reactor.core.publisher.Mono.just;
 
 @SpringBootTest(
         webEnvironment=RANDOM_PORT,
-        properties = {"spring.datasource.url=jdbc:h2:mem:review-db"})
+        properties = {"spring.datasource.url=jdbc:h2:mem:review-db", "eureka.client.enabled=false"})
 @Import(ReviewMapperImpl.class)
 class ReviewServiceImplTest {
     @Autowired

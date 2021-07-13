@@ -26,7 +26,32 @@ export COMPOSE_FILE=docker-compose-partitions.yml && \
 unset COMPOSE_FILE
 
 ## Kafka Partition(2) 사용
-export COMPOSE_FILE=docker-compose-partitions.yml && \
+export COMPOSE_FILE=docker-compose-kafka.yml && \
 ./test-em-all.bash start stop && \
 unset COMPOSE_FILE
 
+## Eureka API
+curl -H "accept:application/json" localhost:8761/eureka/apps -s | jq -r '.applications.application[].instance[].instanceId'
+
+## Loadbalancer Test
+curl localhost:8080/product-composite/2 -s | jq -r .serviceAddresses.rev
+
+## Scale 조정
+docker-compose up -d --scale review=2 --scale eureka=0
+
+## 포트 확인
+docker-compose ps gateway eureka product-composite product recommendation review
+
+## 에지서버 라우트 경로 확인
+curl localhost:8080/actuator/gateway/routes -s | jq '.[] | {"\(.route_id)":"\(.predicate)"}'
+
+## 도커 로그 확인
+dco logs -f --tail=0 gateway
+
+## 검색서버에 등록된 인스턴스 목록 조회
+curl -H "accept:application/json" localhost:8080/eureka/api/apps -s | jq -r '.applications.application[].instance[].instanceId'
+
+## 호스트 헤더 기반 라우팅 테스트
+curl localhost:8080/headerrouting -H "HOST: i.feel.lucky:8080"
+
+curl localhost:8080/headerrouting -H "HOST: im.a.teapot:8080"

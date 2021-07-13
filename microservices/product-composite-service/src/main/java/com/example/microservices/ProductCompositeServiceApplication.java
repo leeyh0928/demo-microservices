@@ -1,20 +1,15 @@
 package com.example.microservices;
 
-import com.example.microservices.composite.product.services.ProductCompositeIntegration;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.health.CompositeReactiveHealthContributor;
-import org.springframework.boot.actuate.health.ReactiveHealthContributor;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.reactive.function.client.WebClient;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spring.web.plugins.Docket;
-
-import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -22,7 +17,6 @@ import static springfox.documentation.builders.RequestHandlerSelectors.basePacka
 import static springfox.documentation.spi.DocumentationType.SWAGGER_2;
 
 @SpringBootApplication
-@RequiredArgsConstructor
 public class ProductCompositeServiceApplication {
 	@Value("${api.common.version}")           String apiVersion;
 	@Value("${api.common.title}")             String apiTitle;
@@ -58,16 +52,10 @@ public class ProductCompositeServiceApplication {
 				));
 	}
 
-	private final ProductCompositeIntegration integration;
-
 	@Bean
-	ReactiveHealthContributor coreServices() {
-		return CompositeReactiveHealthContributor.fromMap(Map.of(
-				"product", integration::getProductHealth,
-				"recommendation", integration::getRecommendationHealth,
-				"review", (ReactiveHealthIndicator) integration::getReviewHealth));
-
-
+	@LoadBalanced
+	public WebClient.Builder loadBalancedWebClientBuilder() {
+		return WebClient.builder();
 	}
 
 	public static void main(String[] args) {

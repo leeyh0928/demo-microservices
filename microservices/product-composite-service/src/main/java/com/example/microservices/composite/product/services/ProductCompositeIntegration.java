@@ -11,10 +11,8 @@ import com.example.microservices.util.exceptions.InvalidInputException;
 import com.example.microservices.util.exceptions.NotFoundException;
 import com.example.microservices.util.http.HttpErrorInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.health.Health;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.Output;
 import org.springframework.messaging.MessageChannel;
@@ -32,18 +30,18 @@ import static com.example.microservices.api.event.Event.Type.CREATE;
 @Slf4j
 @EnableBinding(ProductCompositeIntegration.MessageSources.class)
 @Component
+@RequiredArgsConstructor
 public class ProductCompositeIntegration implements
         ProductService, RecommendationService, ReviewService {
-    private static final String HTTP = "http://";
+    private static final String PRODUCT_SERVICE_URL = "http://product";
+    private static final String RECOMMENDATION_SERVICE_URL = "http://recommendation";
+    private static final String REVIEW_SERVICE_URL = "http://review";
 
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
     private final ObjectMapper mapper;
+    private final MessageSources messageSources;
 
-    private final String productServiceUrl;
-    private final String recommendationServiceUrl;
-    private final String reviewServiceUrl;
-
-    private MessageSources messageSources;
+    private WebClient webClient;
 
     public interface MessageSources {
         String OUTPUT_PRODUCTS = "output-products";
@@ -60,26 +58,6 @@ public class ProductCompositeIntegration implements
         MessageChannel outputReviews();
     }
 
-    @Autowired
-    public ProductCompositeIntegration(
-            MessageSources messageSources,
-            WebClient.Builder webClient,
-            ObjectMapper mapper,
-            @Value("${app.product-service.host}") String productServiceHost,
-            @Value("${app.product-service.port}") int productServicePort,
-            @Value("${app.recommendation-service.host}") String recommendationServiceHost,
-            @Value("${app.recommendation-service.port}") int recommendationServicePort,
-            @Value("${app.review-service.host}") String reviewServiceHost,
-            @Value("${app.review-service.port}") int reviewServicePort) {
-        this.messageSources = messageSources;
-        this.webClient = webClient.build();
-        this.mapper = mapper;
-
-        this.productServiceUrl = HTTP + productServiceHost + ":" + productServicePort;
-        this.recommendationServiceUrl = HTTP + recommendationServiceHost + ":" + recommendationServicePort;
-        this.reviewServiceUrl = HTTP + reviewServiceHost + ":" + reviewServicePort;
-    }
-
     @Override
     public Product createProduct(Product body) {
         messageSources.outputProducts().send(MessageBuilder.withPayload(
@@ -91,10 +69,10 @@ public class ProductCompositeIntegration implements
 
     @Override
     public Mono<Product> getProduct(int productId) {
-        String url = this.productServiceUrl + "/product/" + productId;
+        String url = PRODUCT_SERVICE_URL + "/product/" + productId;
         log.debug("Will call getProduct API on URL: {}", url);
 
-        return webClient.get().uri(url)
+        return getWebClient().get().uri(url)
                 .retrieve()
                 .bodyToMono(Product.class)
                 .log()
@@ -116,10 +94,10 @@ public class ProductCompositeIntegration implements
 
     @Override
     public Flux<Recommendation> getRecommendations(int productId) {
-        String url = recommendationServiceUrl + "/recommendation?productId=" + productId;
+        String url = RECOMMENDATION_SERVICE_URL + "/recommendation?productId=" + productId;
         log.debug("Will call getRecommendations API on URL: {}", url);
 
-        return webClient.get().uri(url)
+        return getWebClient().get().uri(url)
                 .retrieve()
                 .bodyToFlux(Recommendation.class)
                 .log()
@@ -143,10 +121,10 @@ public class ProductCompositeIntegration implements
 
     @Override
     public Flux<Review> getReviews(int productId) {
-            String url = reviewServiceUrl + "/review?productId=" + productId;
+            String url = REVIEW_SERVICE_URL + "/review?productId=" + productId;
             log.debug("Will call getReviews API on URL: {}", url);
 
-            return webClient.get().uri(url)
+            return getWebClient().get().uri(url)
                     .retrieve()
                     .bodyToFlux(Review.class)
                     .log()
@@ -161,28 +139,11 @@ public class ProductCompositeIntegration implements
         messageSources.outputReviews().send(MessageBuilder.withPayload(deleteCommand(productId)).build());
     }
 
-    public Mono<Health> getProductHealth() {
-        return getHealth(productServiceUrl);
-    }
-
-    public Mono<Health> getRecommendationHealth() {
-        return getHealth(recommendationServiceUrl);
-    }
-
-    public Mono<Health> getReviewHealth() {
-        return getHealth(reviewServiceUrl);
-    }
-
-    private Mono<Health> getHealth(String url) {
-        var actuatorUrl = url + "/actuator/health";
-        log.debug("Will can the Health API on URL: {}", actuatorUrl);
-
-        return webClient.get().uri(actuatorUrl)
-                .retrieve()
-                .bodyToMono(String.class)
-                .map(s -> new Health.Builder().up().build())
-                .onErrorResume(ex -> Mono.just(new Health.Builder().down(ex).build()))
-                .log();
+    private WebClient getWebClient() {
+        if (this.webClient == null) {
+            this.webClient = webClientBuilder.build();
+        }
+        return this.webClient;
     }
 
     private Event<Integer, Void> deleteCommand(int productId) {
