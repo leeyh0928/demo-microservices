@@ -53,6 +53,12 @@ services:
     build: spring-cloud/eureka-server
     mem_limit: 350m
 
+  auth-server:
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    build: spring-cloud/authorization-server
+    mem_limit: 350m
+
   gateway:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
