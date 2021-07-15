@@ -1,5 +1,6 @@
 package com.example.microservices.composite.product.services;
 
+import com.example.microservices.ProductCompositeServiceApplication;
 import com.example.microservices.api.composite.product.ProductAggregate;
 import com.example.microservices.api.composite.product.RecommendationSummary;
 import com.example.microservices.api.composite.product.ReviewSummary;
@@ -32,7 +33,8 @@ import static org.springframework.http.HttpStatus.OK;
 import static reactor.core.publisher.Mono.just;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT,
-        properties = {"eureka.client.enabled=false"})
+        classes = {ProductCompositeServiceApplication.class, TestSecurityConfig.class },
+        properties = {"spring.main.allow-bean-definition-overriding=true", "eureka.client.enabled=false"})
 class MessagingTests {
     @Autowired
     private MessageCollector collector;

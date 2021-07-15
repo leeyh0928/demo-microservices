@@ -18,8 +18,8 @@ public class SecurityConfig {
                 .pathMatchers("/oauth/**").permitAll()
                 .anyExchange().authenticated()
                 .and()
-                .oauth2ResourceServer()
-                .jwt();
+            .oauth2ResourceServer()
+            .jwt();
         return http.build();
     }
 }

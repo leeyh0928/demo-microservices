@@ -43,7 +43,6 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
         // This is not safe for production, but makes reading
         // in samples easier.
         // Normally passwords should be hashed using BCrypt
-
         clients.inMemory()
                 .withClient("reader")
                     .authorizedGrantTypes("code", "authorization_code", "implicit", "password")
@@ -56,7 +55,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
                     .authorizedGrantTypes("code", "authorization_code", "implicit", "password")
                     .redirectUris("http://my.redirect.uri")
                     .secret("{noop}secret")
-                    .scopes("product:read")
+                    .scopes("product:read", "product:write")
                     .accessTokenValiditySeconds(600_000_000)
                     .and()
                 .withClient("noscopes")

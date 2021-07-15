@@ -23,7 +23,7 @@ public class KeyConfig {
             RSAPrivateKeySpec privateSpec = new RSAPrivateKeySpec(new BigInteger(modulus), new BigInteger(privateExponent));
             KeyFactory factory = KeyFactory.getInstance("RSA");
             return new KeyPair(factory.generatePublic(publicSpec), factory.generatePrivate(privateSpec));
-        } catch ( Exception e ) {
+        } catch (Exception e ) {
             throw new IllegalArgumentException(e);
         }
     }
