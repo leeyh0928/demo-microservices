@@ -20,6 +20,8 @@ public class HealthCheckConfiguration {
     private static final String PRODUCT_SERVICE_URL = "http://product";
     private static final String RECOMMENDATION_SERVICE_URL = "http://recommendation";
     private static final String REVIEW_SERVICE_URL = "http://review";
+    private static final String AUTH_SERVER_URL = "http://auth-server";
+    private static final String PRODUCT_COMPOSITE_URL = "http://product-composite";
 
     private final WebClient.Builder webClientBuilder;
     private WebClient webClient;
@@ -31,9 +33,11 @@ public class HealthCheckConfiguration {
 
     private Map<String, ReactiveHealthContributor> getHealthMap() {
         return Map.of(
+                "auth-server", (ReactiveHealthIndicator) () -> getHealth(AUTH_SERVER_URL),
                 "product", (ReactiveHealthIndicator) () -> getHealth(PRODUCT_SERVICE_URL),
                 "recommendation", (ReactiveHealthIndicator) () -> getHealth(RECOMMENDATION_SERVICE_URL),
-                "review", (ReactiveHealthIndicator) () -> getHealth(REVIEW_SERVICE_URL));
+                "review", (ReactiveHealthIndicator) () -> getHealth(REVIEW_SERVICE_URL),
+                "product-composite", (ReactiveHealthIndicator) () -> getHealth(PRODUCT_COMPOSITE_URL));
     }
 
     private Mono<Health> getHealth(String url) {
