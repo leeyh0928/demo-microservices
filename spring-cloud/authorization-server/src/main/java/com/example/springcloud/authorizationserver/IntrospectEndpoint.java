@@ -2,7 +2,6 @@ package com.example.springcloud.authorizationserver;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.endpoint.FrameworkEndpoint;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +27,7 @@ class IntrospectEndpoint {
             return attributes;
         }
 
-        OAuth2Authentication authentication = this.tokenStore.readAuthentication(token);
+//        OAuth2Authentication authentication = this.tokenStore.readAuthentication(token);
 
         attributes.put("active", true);
         attributes.put("exp", accessToken.getExpiration().getTime());

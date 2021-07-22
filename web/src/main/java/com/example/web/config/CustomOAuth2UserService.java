@@ -29,7 +29,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         var attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
         httpSession.setAttribute("user", SessionUser.of(
-                attributes.getSub(), attributes.getUserNo(), attributes.getName(),attributes.getEmail()));
+                attributes.getSub(), attributes.getName(),attributes.getEmail()));
 
         return new DefaultOAuth2User(
                 oAuth2User.getAuthorities(),

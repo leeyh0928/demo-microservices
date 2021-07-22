@@ -23,4 +23,9 @@ public class IndexController {
 
         return "index";
     }
+
+    @GetMapping("/product/save")
+    public String productSave() {
+        return "product-save";
+    }
 }

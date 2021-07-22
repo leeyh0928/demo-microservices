@@ -15,7 +15,6 @@ class CustomAttributeUserTokenConverter extends DefaultUserAuthenticationConvert
         response.put("sub", authentication.getName());
         if (authentication.getPrincipal() instanceof User) {
             User user = (User) authentication.getPrincipal();
-            response.put("user_no", user.getId());
             response.put("name", user.getName());
             response.put("email", user.getEmail());
         }

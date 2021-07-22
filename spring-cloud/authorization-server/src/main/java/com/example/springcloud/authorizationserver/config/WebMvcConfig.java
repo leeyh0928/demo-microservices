@@ -21,7 +21,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 //    }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoder() {
         //return PasswordEncoderFactories.createDelegatingPasswordEncoder();
         return NoOpPasswordEncoder.getInstance();
     }

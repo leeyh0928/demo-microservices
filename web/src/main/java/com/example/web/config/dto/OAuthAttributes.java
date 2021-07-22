@@ -8,24 +8,21 @@ import java.util.Objects;
 
 @Getter
 public class OAuthAttributes {
-    private Map<String, Object> attributes;
-    private String nameAttributeKey;
-    private long userNo;
-    private String sub;
-    private String name;
-    private String email;
+    private final Map<String, Object> attributes;
+    private final String nameAttributeKey;
+    private final String sub;
+    private final String name;
+    private final String email;
 
     @Builder
     public OAuthAttributes(Map<String, Object> attributes,
                            String nameAttributeKey,
                            String sub,
-                           long userNo,
                            String name,
                            String email) {
         this.attributes = attributes;
         this.nameAttributeKey = nameAttributeKey;
         this.sub = sub;
-        this.userNo = userNo;
         this.name = name;
         this.email = email;
     }
@@ -57,7 +54,6 @@ public class OAuthAttributes {
                                            Map<String, Object> attributes) {
         return OAuthAttributes.builder()
                 .sub((String) attributes.get(userNameAttributeName))
-                .userNo(Long.parseLong(attributes.get("user_no").toString()))
                 .name((String) attributes.get("name"))
                 .email((String) attributes.get("email"))
                 .attributes(attributes)
