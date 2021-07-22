@@ -1,0 +1,19 @@
+spring.security.oauth2.client:
+  registration:
+    custom:
+      client-id: reader
+      client-secret: secret
+      redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
+      authorization-grant-type: authorization_code
+      scope: product:read
+      client-name: Custom
+  provider:
+    custom:
+      authorization-uri: ${auth-server.url}/oauth/authorize
+      token-uri: ${auth-server.url}/oauth/token
+      user-info-uri: ${auth-server.url}/introspect
+      userInfoAuthenticationMethod: form
+      user-name-attribute: sub
+
+auth-server.url: http://auth-server:9999
+#auth-server.url: http://gateway:8080

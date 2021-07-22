@@ -55,3 +55,12 @@ curl -H "accept:application/json" localhost:8080/eureka/api/apps -s | jq -r '.ap
 curl localhost:8080/headerrouting -H "HOST: i.feel.lucky:8080"
 
 curl localhost:8080/headerrouting -H "HOST: im.a.teapot:8080"
+
+## 인증
+http://gateway:8080/oauth/authorize?response_type=code&client_id=reader&scope=product:read&redirect_uri=my.redirect.uri
+
+code=3MCH9w
+
+curl -k http://reader:secret@gateway:8080/oauth/token -d grant_type=authorization_code -d client_id=reader -d redirect_uri=http://my.redirect.uri -d code=3MCH9w
+
+curl -k http://reader:secret@gateway:8080/oauth/introspect -d token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYWdudXMiLCJleHAiOjIyMjY3NDg1MDUsImF1dGhvcml0aWVzIjpbIlJPTEVfVVNFUiJdLCJqdGkiOiJmMTZjYmU1MC05Nzk3LTQ5OTQtOGQ5Ni01YzkxMWZmYWI1NGQiLCJjbGllbnRfaWQiOiJyZWFkZXIiLCJzY29wZSI6WyJwcm9kdWN0OnJlYWQiXX0.bm827VB9jZBa4iHCLkWw8LuYiQFQaubqiBMsfKoC7fvpOcG2Vl3GgY5Xws3m2BKY5lcnHPKRTAZGq7LfLb8OQN79eX9r-wBZ_YHoCa-yoieWbQwj5-UsjG7QPEIhPyT0U-EonouRyrB5-nxAnjh0Ri-ZeNNoBiumaYVWVFiGmi0pm0UwZUj-BMEhyJlyykVfRXDuOcAI3_7rxc4cRX4uN39XDJEUpr9zMIC4KMQIIzz3e-KnItti5-NNz_4E8DxEEK9u39PvTZMTtuBfF4cR8Xx7IEITM7WLZnskuJ6kUy-SGM1nHDuyvAqqUgGMBZjDaXBQ_jOsQ-2AZAYdI0rAXQ

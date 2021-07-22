@@ -19,7 +19,7 @@ class IntrospectEndpoint {
 
     @PostMapping("/introspect")
     @ResponseBody
-    public Map<String, Object> introspect(@RequestParam("token") String token) {
+    public Map<String, Object> introspect(@RequestParam("access_token") String token) {
         OAuth2AccessToken accessToken = this.tokenStore.readAccessToken(token);
 
         Map<String, Object> attributes = new HashMap<>();
@@ -33,8 +33,17 @@ class IntrospectEndpoint {
         attributes.put("active", true);
         attributes.put("exp", accessToken.getExpiration().getTime());
         attributes.put("scope", String.join(" ", accessToken.getScope()));
-        attributes.put("sub", authentication.getName());
+
+        attributes.putAll(accessToken.getAdditionalInformation());
 
         return attributes;
     }
+
+//    @GetMapping(value="/userinfo")
+//    public Map<String, Object> user(@AuthenticationPrincipal Principal principal) {
+//        if (principal != null) {
+//            return Map.of("name", principal.getName(), "authorities", SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+//        }
+//        return null;
+//    }
 }

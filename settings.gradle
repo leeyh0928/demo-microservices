@@ -1,5 +1,6 @@
 include ':api'
 include ':util'
+include ':web'
 include 'microservices:product-composite-service'
 include 'microservices:product-service'
 include 'microservices:recommendation-service'

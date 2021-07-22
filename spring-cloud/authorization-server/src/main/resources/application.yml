@@ -1,6 +1,24 @@
 server.port: 9999
 
+logging:
+  level:
+    root: info
+#    org.springframework.web: debug
+    web: debug
+
 spring.application.name: auth-server
+
+spring:
+  h2:
+    console:
+      enabled: true
+
+spring.datasource:
+    url: jdbc:h2:mem:auth-db
+
+spring.jpa:
+  hibernate.ddl-auto: update
+  open-in-view: false
 
 app:
   eureka-username: u
@@ -9,6 +27,7 @@ app:
 
 eureka:
   client:
+    webclient.enabled: true
     serviceUrl:
       defaultZone: "http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/"
     initialInstanceInfoReplicationIntervalSeconds: 5
