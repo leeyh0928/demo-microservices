@@ -28,7 +28,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'com.github.ben-manes.caffeine:caffeine'
+//    implementation 'com.github.ben-manes.caffeine:caffeine'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     implementation 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure'
     implementation 'com.nimbusds:nimbus-jose-jwt:9.11'

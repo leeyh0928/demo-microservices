@@ -27,7 +27,7 @@ app:
 
 eureka:
   client:
-    webclient.enabled: true
+#    webclient.enabled: true
     serviceUrl:
       defaultZone: "http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/"
     initialInstanceInfoReplicationIntervalSeconds: 5

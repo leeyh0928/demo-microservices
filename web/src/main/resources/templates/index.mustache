@@ -4,13 +4,13 @@
     <!--로그인 기능 영역-->
     <div class="row">
         <div class="col-md-6">
-            <a href="/product/save" role="button" class="btn btn-primary">상품 등록</a>
+            <a href="/product/create" role="button" class="btn btn-primary">상품 등록</a>
             {{#userName}}
                 Logged in as : <span id="user">{{userName}}</span>
                 <a href="/logout" class="btn btn-info active" role="button">Logout</a>
             {{/userName}}
             {{^userName}}
-                <a href="/oauth2/authorization/naver" class="btn btn-success active" role="button">naver Login</a>
+<!--                <a href="/oauth2/authorization/naver" class="btn btn-success active" role="button">naver Login</a>-->
                 <a href="/oauth2/authorization/custom" class="btn btn-success" role="button">custom Login</a>
             {{/userName}}
         </div>
@@ -18,5 +18,23 @@
 </div>
 <br>
 <!-- 목록 출력 영역 -->
+<table class="table table-horizontal table-bordered">
+    <thead class="thead-strong">
+    <tr>
+        <th>상품번호</th>
+        <th>상품명</th>
+        <th>무게</th>
+    </tr>
+    </thead>
+    <tbody id="tbody">
+    {{#products}}
+        <tr>
+            <td>{{productId}}</td>
+            <td>{{name}}</td>
+            <td>{{weight}}</td>
+        </tr>
+    {{/products}}
+    </tbody>
+</table>
 
 {{>layout/footer}}

@@ -1,3 +1,7 @@
+auth-server.url: http://gateway:9999
+
+#auth-server.url: http://auth-server:9999
+
 spring.security.oauth2.client:
   registration:
     custom:
@@ -15,5 +19,4 @@ spring.security.oauth2.client:
       userInfoAuthenticationMethod: form
       user-name-attribute: sub
 
-auth-server.url: http://auth-server:9999
-#auth-server.url: http://gateway:8080
+
