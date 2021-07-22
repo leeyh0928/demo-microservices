@@ -25,7 +25,7 @@ class UserSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                     .antMatchers("/h2-console/**").permitAll()
                     .antMatchers("/actuator/**").permitAll()
-                    .antMatchers("/introspect/**").permitAll()
+                    .antMatchers("/oauth/introspect/**").permitAll()
                     .mvcMatchers("/.well-known/jwks.json").permitAll()
                 .anyRequest().authenticated()
             .and()

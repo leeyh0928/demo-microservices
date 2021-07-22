@@ -1,18 +1,19 @@
 let main = {
-    init: () => {
+    init: function () {
+        let self = this;
         $('#btn-create').on('click', () => {
-            this.create();
+            self.create();
         });
 
         $('#btn-update').on('click', () => {
-            this.update();
+            self.update();
         });
 
         $('#btn-delete').on('click', () => {
-           this.delete();
+            self.delete();
         });
     },
-    create: () => {
+    create: function () {
         let data = {
             productId: Number($('#productId').val()),
             name: $('#name').val(),
@@ -32,7 +33,7 @@ let main = {
             alert(JSON.stringify(error));
         })
     },
-    update: () => {
+    update: function () {
         let data = {
             name: $('#name').val(),
             weight: Number($('#weight').val())
@@ -53,7 +54,7 @@ let main = {
             alert(JSON.stringify(error));
         })
     },
-    delete: () => {
+    delete: function () {
         let id = Number($('#productId').val());
 
         $.ajax({

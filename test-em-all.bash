@@ -189,7 +189,7 @@ fi
 
 waitForService curl http://$HOST:$PORT/actuator/health
 
-ACCESS_TOKEN=$(curl -k http://writer:secret@$HOST:$PORT/oauth/token -d grant_type=password -d username=magnus -d password=password -s | jq .access_token -r)
+ACCESS_TOKEN=$(curl -k http://writer:secret@$HOST:9999/oauth/token -d grant_type=password -d username=magnus -d password=password -s | jq .access_token -r)
 AUTH="-H \"Authorization: Bearer $ACCESS_TOKEN\""
 
 setupTestdata
@@ -229,7 +229,7 @@ assertEqual "\"Type mismatch.\"" "$(echo $RESPONSE | jq .message)"
 assertCurl 401 "curl -k http://$HOST:$PORT/product-composite/$PROD_ID_REVS_RECS -s"
 
 # Verify that the reader - client with only read scope can call the read API but not delete API.
-READER_ACCESS_TOKEN=$(curl -k http://reader:secret@$HOST:$PORT/oauth/token -d grant_type=password -d username=magnus -d password=password -s | jq .access_token -r)
+READER_ACCESS_TOKEN=$(curl -k http://reader:secret@$HOST:9999/oauth/token -d grant_type=password -d username=magnus -d password=password -s | jq .access_token -r)
 READER_AUTH="-H \"Authorization: Bearer $READER_ACCESS_TOKEN\""
 
 assertCurl 200 "curl -k http://$HOST:$PORT/product-composite/$PROD_ID_REVS_RECS $READER_AUTH -s"

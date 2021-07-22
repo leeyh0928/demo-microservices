@@ -28,6 +28,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             throw new BadCredentialsException("로그인 정보가 일치하지 않습니다.");
         }
 
+        log.info("########## 로그인 성공!!! ############");
+
         return new UsernamePasswordAuthenticationToken(user, password, user.getAuthorities());
     }
 

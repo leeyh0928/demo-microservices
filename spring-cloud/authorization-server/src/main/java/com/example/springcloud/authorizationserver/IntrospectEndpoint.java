@@ -16,7 +16,7 @@ import java.util.Map;
 class IntrospectEndpoint {
     private final TokenStore tokenStore;
 
-    @PostMapping("/introspect")
+    @PostMapping("/oauth/introspect")
     @ResponseBody
     public Map<String, Object> introspect(@RequestParam("access_token") String token) {
         OAuth2AccessToken accessToken = this.tokenStore.readAccessToken(token);
@@ -37,12 +37,4 @@ class IntrospectEndpoint {
 
         return attributes;
     }
-
-//    @GetMapping(value="/userinfo")
-//    public Map<String, Object> user(@AuthenticationPrincipal Principal principal) {
-//        if (principal != null) {
-//            return Map.of("name", principal.getName(), "authorities", SecurityContextHolder.getContext().getAuthentication().getAuthorities());
-//        }
-//        return null;
-//    }
 }

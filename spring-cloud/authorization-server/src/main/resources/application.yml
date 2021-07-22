@@ -3,8 +3,8 @@ server.port: 9999
 logging:
   level:
     root: info
-#    org.springframework.web: debug
-    web: debug
+    org.springframework.web: debug
+#    web: debug
 
 spring.application.name: auth-server
 

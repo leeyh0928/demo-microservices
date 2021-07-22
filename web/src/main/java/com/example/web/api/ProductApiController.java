@@ -9,11 +9,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RequiredArgsConstructor
 public class ProductApiController {
     private static final String PRODUCT_URL = "http://gateway:8080/product-composite";
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
 
     @PostMapping("/api/product")
     public void create(@RequestBody Product product) {
-        webClient.post()
+        webClientBuilder.build().post()
                 .uri(PRODUCT_URL)
                 .bodyValue(product)
                 .retrieve()
@@ -23,7 +23,7 @@ public class ProductApiController {
 
     @PutMapping("/api/product/{productId}")
     public void update(@PathVariable int productId, @RequestBody Product product) {
-        webClient.put()
+        webClientBuilder.build().put()
                 .uri(PRODUCT_URL + "/" + productId)
                 .bodyValue(product)
                 .retrieve()
@@ -33,7 +33,7 @@ public class ProductApiController {
 
     @DeleteMapping("/api/product/{productId}")
     public void delete(@PathVariable int productId) {
-        webClient.delete()
+        webClientBuilder.build().delete()
                 .uri(PRODUCT_URL + "/" + productId)
                 .retrieve()
                 .toBodilessEntity()

@@ -1,21 +1,20 @@
-auth-server.url: http://gateway:9999
-
-#auth-server.url: http://auth-server:9999
+auth-server.url: http://auth-server:9999
+user-api.url: http://gateway:8080
 
 spring.security.oauth2.client:
   registration:
     custom:
-      client-id: reader
+      client-id: writer
       client-secret: secret
       redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
       authorization-grant-type: authorization_code
-      scope: product:read
+      scope: product:write,product:read
       client-name: Custom
   provider:
     custom:
       authorization-uri: ${auth-server.url}/oauth/authorize
       token-uri: ${auth-server.url}/oauth/token
-      user-info-uri: ${auth-server.url}/introspect
+      user-info-uri: ${user-api.url}/oauth/introspect
       userInfoAuthenticationMethod: form
       user-name-attribute: sub
 

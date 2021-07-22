@@ -3,6 +3,7 @@ package com.example.web.web;
 import com.example.web.config.dto.SessionUser;
 import com.example.web.dto.Product;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,12 +12,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.servlet.http.HttpSession;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class IndexController {
     private static final String PRODUCT_URL = "http://gateway:8080/product-composite";
     private final HttpSession httpSession;
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
 
     @GetMapping("/")
     public String index(Model model) {
@@ -36,10 +38,12 @@ public class IndexController {
 
     @GetMapping("/product/update/{productId}")
     public String productUpdate(@PathVariable int productId, Model model) {
-        Product product = webClient.get()
+
+        Product product = webClientBuilder.build().get()
                 .uri(PRODUCT_URL + "/" + productId)
                 .retrieve()
                 .bodyToMono(Product.class)
+                .log()
                 .block();
 
         model.addAttribute("product", product);

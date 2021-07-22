@@ -36,7 +36,7 @@ public class OAuth2AuthorizationServerApplication implements ApplicationRunner {
 		);
 
 		reader.setClientSecret(passwordEncoder.encode("secret"));
-		reader.setAccessTokenValiditySeconds(360);
+		reader.setAccessTokenValiditySeconds(3600);
 		reader.setRefreshTokenValiditySeconds(2_592_000);
 		reader.setAutoApproveScopes(Collections.singleton("true"));
 		jdbcClientDetailsService.addClientDetails(reader);
@@ -44,14 +44,14 @@ public class OAuth2AuthorizationServerApplication implements ApplicationRunner {
 		BaseClientDetails writer = new BaseClientDetails(
 				"writer",
 				null,
-				"product:read,product:writer",
+				"product:read,product:write",
 				"authorization_code,refresh_token,password",
 				null,
 				"http://localhost:8090/login/oauth2/code/custom,http://my.redirect.uri"
 		);
 
 		writer.setClientSecret(passwordEncoder.encode("secret"));
-		writer.setAccessTokenValiditySeconds(360);
+		writer.setAccessTokenValiditySeconds(120);
 		writer.setRefreshTokenValiditySeconds(2_592_000);
 		jdbcClientDetailsService.addClientDetails(writer);
 
