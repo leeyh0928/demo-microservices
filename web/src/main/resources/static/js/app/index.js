@@ -23,7 +23,6 @@ let main = {
         $.ajax({
             type: 'POST',
             url: '/api/product',
-            dataType: 'json',
             contentType: 'application/json; charset=utf-8',
             data: JSON.stringify(data)
         }).done(() => {
@@ -44,7 +43,6 @@ let main = {
         $.ajax({
             type: 'PUT',
             url: '/api/product/' + id,
-            dataType: 'json',
             contentType: 'application/json; charset=utf-8',
             data: JSON.stringify(data)
         }).done(() => {
@@ -60,7 +58,6 @@ let main = {
         $.ajax({
             type: 'DELETE',
             url: '/api/product/' + id,
-            dataType: 'json',
             contentType: 'application/json; charset=utf-8'
         }).done(() => {
             alert('상품이 삭제되었습니다.');

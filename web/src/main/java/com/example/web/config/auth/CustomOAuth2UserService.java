@@ -1,7 +1,7 @@
-package com.example.web.config;
+package com.example.web.config.auth;
 
-import com.example.web.config.dto.OAuthAttributes;
-import com.example.web.config.dto.SessionUser;
+import com.example.web.config.auth.dto.OAuthAttributes;
+import com.example.web.config.auth.dto.SessionUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;

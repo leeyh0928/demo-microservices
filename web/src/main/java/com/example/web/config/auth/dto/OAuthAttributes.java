@@ -1,4 +1,4 @@
-package com.example.web.config.dto;
+package com.example.web.config.auth.dto;
 
 import lombok.Builder;
 import lombok.Getter;

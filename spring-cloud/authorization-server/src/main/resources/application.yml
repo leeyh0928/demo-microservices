@@ -3,7 +3,7 @@ server.port: 9999
 logging:
   level:
     root: info
-    org.springframework.web: debug
+#    org.springframework.web: debug
 #    web: debug
 
 spring.application.name: auth-server
@@ -14,7 +14,7 @@ spring:
       enabled: true
 
 spring.datasource:
-    url: jdbc:h2:mem:auth-db
+    url: jdbc:h2:mem:user-db
 
 spring.jpa:
   hibernate.ddl-auto: update

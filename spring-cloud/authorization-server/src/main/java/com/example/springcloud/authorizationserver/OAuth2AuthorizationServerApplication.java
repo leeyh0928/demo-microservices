@@ -51,8 +51,9 @@ public class OAuth2AuthorizationServerApplication implements ApplicationRunner {
 		);
 
 		writer.setClientSecret(passwordEncoder.encode("secret"));
-		writer.setAccessTokenValiditySeconds(120);
+		writer.setAccessTokenValiditySeconds(3600);
 		writer.setRefreshTokenValiditySeconds(2_592_000);
+		writer.setAutoApproveScopes(Collections.singleton("true"));
 		jdbcClientDetailsService.addClientDetails(writer);
 
 		userRepository.save(User.builder()

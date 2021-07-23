@@ -1,6 +1,7 @@
 package com.example.web.web;
 
-import com.example.web.config.dto.SessionUser;
+import com.example.web.config.auth.LoginUser;
+import com.example.web.config.auth.dto.SessionUser;
 import com.example.web.dto.Product;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +22,7 @@ public class IndexController {
     private final WebClient.Builder webClientBuilder;
 
     @GetMapping("/")
-    public String index(Model model) {
-        var user = (SessionUser) httpSession.getAttribute("user");
+    public String index(Model model, @LoginUser SessionUser user) {
 
         if(user != null){
             model.addAttribute("userName", user.getUserName());
