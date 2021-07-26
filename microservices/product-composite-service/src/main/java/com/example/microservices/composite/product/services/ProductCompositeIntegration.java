@@ -80,6 +80,18 @@ public class ProductCompositeIntegration implements
     }
 
     @Override
+    public Flux<Product> getProducts() {
+        String url = PRODUCT_SERVICE_URL + "/product/";
+        log.debug("Will call getProducts API on URL: {}", url);
+
+        return getWebClient().get().uri(url)
+                .retrieve()
+                .bodyToFlux(Product.class)
+                .log()
+                .onErrorMap(WebClientResponseException.class, this::handleException);
+    }
+
+    @Override
     public void deleteProduct(int productId) {
         messageSources.outputProducts().send(MessageBuilder.withPayload(deleteCommand(productId)).build());
     }

@@ -13,9 +13,11 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,38 +84,13 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 
     @Override
     public Mono<ProductAggregate> getCompositeProduct(int productId) {
-        return Mono.zip(values -> createProductAggregate((SecurityContext) values[0], (Product) values[1], (List<Recommendation>) values[2], (List<Review>) values[3],
-                serviceUtil.getServiceAddress()),
+        return Mono.zip(values -> createProductAggregate((SecurityContext) values[0], (Product) values[1], (List<Recommendation>) values[2], (List<Review>) values[3], serviceUtil.getServiceAddress()),
                 ReactiveSecurityContextHolder.getContext().defaultIfEmpty(nullSC),
                 integration.getProduct(productId),
                 integration.getRecommendations(productId).collectList(),
-                integration.getReviews(productId).collectList()
+                integration.getReviews(productId).collectList())
                         .doOnError(ex -> log.warn("getCompositeProduct failed: {}", ex.toString()))
-                        .log());
-    }
-
-    @Override
-    public Mono<Void> deleteCompositeProduct(int productId) {
-        return ReactiveSecurityContextHolder.getContext()
-                .doOnSuccess(sc -> internalDeleteCompositeProduct(sc, productId))
-                .then();
-    }
-
-    private void internalDeleteCompositeProduct(SecurityContext sc, int productId) {
-        try {
-            logAuthorizationInfo(sc);
-
-            log.debug("deleteCompositeProduct: Deletes a product aggregate for productId: {}", productId);
-
-            integration.deleteProduct(productId);
-            integration.deleteRecommendation(productId);
-            integration.deleteReview(productId);
-
-            log.debug("getCompositeProduct: aggregate entities deleted for productId: {}", productId);
-        } catch (RuntimeException re) {
-            log.warn("deleteCompositeProduct failed: {}", re.toString());
-            throw re;
-        }
+                        .log();
     }
 
     private ProductAggregate createProductAggregate(SecurityContext sc, Product product, List<Recommendation> recommendations, List<Review> reviews, String serviceAddress) {
@@ -147,6 +124,55 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
                 serviceAddress, productAddress, reviewAddress, recommendationAddress);
 
         return new ProductAggregate(productId, name, weight, recommendationSummaries, reviewSummaries, serviceAddresses);
+    }
+
+    @Override
+    public Flux<ProductAggregate> getCompositeProducts() {
+        return Mono.zip(values -> createAllProductAggregate((SecurityContext) values[0], (List<Product>) values[1], serviceUtil.getServiceAddress()),
+                ReactiveSecurityContextHolder.getContext().defaultIfEmpty(nullSC),
+                integration.getProducts().collectList())
+                .flatMapMany(Flux::fromIterable)
+                .doOnError(ex -> log.warn("getCompositeProduct failed: {}", ex.toString()))
+                .log();
+    }
+
+    private List<ProductAggregate> createAllProductAggregate(SecurityContext sc, List<Product> products, String serviceAddress) {
+        logAuthorizationInfo(sc);
+
+        return products.stream()
+                .map(it -> new ProductAggregate(
+                        it.getProductId(),
+                        it.getName(),
+                        it.getWeight(),
+                        Collections.emptyList(),
+                        Collections.emptyList(),
+                        new ServiceAddresses(serviceAddress, it.getServiceAddress(), null, null)))
+                .collect(Collectors.toList());
+
+    }
+
+    @Override
+    public Mono<Void> deleteCompositeProduct(int productId) {
+        return ReactiveSecurityContextHolder.getContext()
+                .doOnSuccess(sc -> internalDeleteCompositeProduct(sc, productId))
+                .then();
+    }
+
+    private void internalDeleteCompositeProduct(SecurityContext sc, int productId) {
+        try {
+            logAuthorizationInfo(sc);
+
+            log.debug("deleteCompositeProduct: Deletes a product aggregate for productId: {}", productId);
+
+            integration.deleteProduct(productId);
+            integration.deleteRecommendation(productId);
+            integration.deleteReview(productId);
+
+            log.debug("getCompositeProduct: aggregate entities deleted for productId: {}", productId);
+        } catch (RuntimeException re) {
+            log.warn("deleteCompositeProduct failed: {}", re.toString());
+            throw re;
+        }
     }
 
     private void logAuthorizationInfo(SecurityContext sc) {

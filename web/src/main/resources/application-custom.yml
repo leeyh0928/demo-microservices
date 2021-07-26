@@ -6,7 +6,7 @@ spring.security.oauth2.client:
     custom:
       client-id: writer
       client-secret: secret
-      redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
+      redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
       authorization-grant-type: authorization_code
       scope: product:write,product:read
       client-name: Custom

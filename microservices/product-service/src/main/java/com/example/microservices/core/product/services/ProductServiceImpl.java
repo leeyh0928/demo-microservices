@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -43,6 +44,17 @@ public class ProductServiceImpl implements ProductService {
 
         return repository.findByProductId(productId)
                 .switchIfEmpty(Mono.error(new NotFoundException("No product found for productId: " + productId)))
+                .log()
+                .map(mapper::entityToApi)
+                .map(it -> {
+                    it.setServiceAddress(serviceUtil.getServiceAddress());
+                    return it;
+                });
+    }
+
+    @Override
+    public Flux<Product> getProducts() {
+        return repository.findAll()
                 .log()
                 .map(mapper::entityToApi)
                 .map(it -> {

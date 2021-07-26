@@ -11,14 +11,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
 public class IndexController {
     private static final String PRODUCT_URL = "http://gateway:8080/product-composite";
-    private final HttpSession httpSession;
     private final WebClient.Builder webClientBuilder;
 
     @GetMapping("/")
@@ -26,6 +25,16 @@ public class IndexController {
 
         if(user != null){
             model.addAttribute("userName", user.getUserName());
+
+            List<Product> products = webClientBuilder.build()
+                    .get()
+                    .uri(PRODUCT_URL)
+                    .retrieve()
+                    .bodyToFlux(Product.class)
+                    .collectList()
+                    .block();
+
+            model.addAttribute("products", products);
         }
 
         return "index";
@@ -39,7 +48,8 @@ public class IndexController {
     @GetMapping("/product/update/{productId}")
     public String productUpdate(@PathVariable int productId, Model model) {
 
-        Product product = webClientBuilder.build().get()
+        Product product = webClientBuilder.build()
+                .get()
                 .uri(PRODUCT_URL + "/" + productId)
                 .retrieve()
                 .bodyToMono(Product.class)
